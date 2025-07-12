@@ -1,16 +1,10 @@
-# flutter_weather
+# Hydromet Application
 
-A new Flutter project.
+A Predictive Early Warning System that aims to aid citizens of San Pedro
 
-## Getting Started
+## Note
 
-This project is a starting point for a Flutter application.
+This is a Capstone Project compliant to the Capstone courses in Polytechnic University of the Philippines - San Pedro Campus.
 
-A few resources to get you started if this is your first Flutter project:
+Any data for the project will be used for educational purposes ONLY.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
