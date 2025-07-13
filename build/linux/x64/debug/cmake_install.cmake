@@ -49,29 +49,29 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/flutter_weather" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/flutter_weather")
+  if(EXISTS "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/weather_hybrid_app" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/weather_hybrid_app")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/flutter_weather"
+         FILE "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/weather_hybrid_app"
          RPATH "$ORIGIN/lib")
   endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/flutter_weather")
+   "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/weather_hybrid_app")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle" TYPE EXECUTABLE FILES "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/intermediates_do_not_run/flutter_weather")
-  if(EXISTS "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/flutter_weather" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/flutter_weather")
+  file(INSTALL DESTINATION "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle" TYPE EXECUTABLE FILES "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/intermediates_do_not_run/weather_hybrid_app")
+  if(EXISTS "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/weather_hybrid_app" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/weather_hybrid_app")
     file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/flutter_weather"
+         FILE "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/weather_hybrid_app"
          OLD_RPATH "/home/af4ll/Workspace/Capstone/Hydromet/linux/flutter/ephemeral:"
          NEW_RPATH "$ORIGIN/lib")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/flutter_weather")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/weather_hybrid_app")
     endif()
   endif()
 endif()
@@ -101,18 +101,6 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
-  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/lib/")
-  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
-    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-  endif()
-  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
-  endif()
-  file(INSTALL DESTINATION "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/lib" TYPE DIRECTORY FILES "/home/af4ll/Workspace/Capstone/Hydromet/build/native_assets/linux/")
-endif()
-
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
   
   file(REMOVE_RECURSE "/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/bundle/data/flutter_assets")
   
@@ -133,7 +121,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/flutter/cmake_install.cmake")
-  include("/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/runner/cmake_install.cmake")
 
 endif()
 

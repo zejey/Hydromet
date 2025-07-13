@@ -251,13 +251,13 @@ pkgcfg_lib_GTK_pangocairo-1.0:FILEPATH=/usr/lib64/libpangocairo-1.0.so
 pkgcfg_lib_GTK_z:FILEPATH=/usr/lib64/libz.so
 
 //Value Computed by CMake
-runner_BINARY_DIR:STATIC=/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug/runner
+runner_BINARY_DIR:STATIC=/home/af4ll/Workspace/Capstone/Hydromet/build/linux/x64/debug
 
 //Value Computed by CMake
-runner_IS_TOP_LEVEL:STATIC=OFF
+runner_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-runner_SOURCE_DIR:STATIC=/home/af4ll/Workspace/Capstone/Hydromet/linux/runner
+runner_SOURCE_DIR:STATIC=/home/af4ll/Workspace/Capstone/Hydromet/linux
 
 
 ########################
@@ -352,7 +352,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

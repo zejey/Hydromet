@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 // using hardcoded API key for testing purposes
-const apiKey = '98b876bdda3ba2bbf68d26d48a26b4b9';
+const apiKey = 'a62db0fee1e1de12a993982cece6a6bc';
 
 class WeatherService {
   // Use this for Web version - Flutter Web
@@ -26,7 +26,7 @@ class WeatherService {
 
   // Fetch Air Quality Data
   Future<Map<String, dynamic>> fetchAirPollution(double lat, double lon) async {
-    final url = '$baseUrl/air_pollution?lat=$lat&lon=$lon&appid=$apiKey';
+    final url = '$baseUrl/air_pollution?lat=$lat&lon=$lon&appid=$apiKey'; 
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -37,9 +37,7 @@ class WeatherService {
   }
 
   // Fetch Location Suggestions
-  Future<List<Map<String, dynamic>>> fetchLocationSuggestions(
-    String city,
-  ) async {
+  Future<List<Map<String, dynamic>>> fetchLocationSuggestions(String city) async {
     final url = '$geoUrl?q=$city&limit=5&appid=$apiKey';
     final response = await http.get(Uri.parse(url));
 
@@ -51,32 +49,37 @@ class WeatherService {
     }
   }
 
-  // Fetch 5-day / 3-hour forecast (next 24 hours only)
-  Future<List<Map<String, dynamic>>> fetchHourlyForecast(
-    double lat,
-    double lon,
-  ) async {
-    final response = await http.get(
-      Uri.parse(
-        'https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&appid=$apiKey&units=metric',
-      ),
-    );
+  // Fetch weather by coordinates
+  Future<Map<String, dynamic>> fetchWeatherByCoords(double lat, double lon) async {
+    final url = '$baseUrl/weather?lat=$lat&lon=$lon&appid=$apiKey&units=metric';
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final List forecasts = data['list'];
-      return forecasts
-          .take(8)
-          .map<Map<String, dynamic>>(
-            (item) => {
-              'time': item['dt_txt'],
-              'temp': item['main']['temp'],
-              'icon': item['weather'][0]['icon'],
-            },
-          )
-          .toList();
+      return json.decode(response.body);
     } else {
-      throw Exception('Failed to load hourly forecast');
+      throw Exception('Failed to load weather by coordinates');
     }
   }
+
+    // Fetch 5-day / 3-hour forecast (next 24 hours only)
+    Future<List<Map<String, dynamic>>> fetchHourlyForecast(double lat, double lon) async {
+      final response = await http.get(Uri.parse(
+        'https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&appid=$apiKey&units=metric',
+      ));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List forecasts = data['list'];
+        return forecasts.take(8).map<Map<String, dynamic>>((item) => {
+          'time': item['dt_txt'],
+          'temp': item['main']['temp'],
+          'icon': item['weather'][0]['icon'],
+          'humidity': item['main']['humidity'],
+        }).toList();
+      } else {
+        throw Exception('Failed to load hourly forecast');
+      }
+    }
+
+
 }
