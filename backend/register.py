@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, auth
 from datetime import datetime
 import os
 
@@ -26,8 +26,191 @@ except Exception as e:
     print(f"Firebase initialization error: {e}")
     db = None
 
+def verify_firebase_token(token):
+    """Verify Firebase ID token and return user info"""
+    try:
+        # Remove 'Bearer ' prefix if present
+        if token.startswith('Bearer '):
+            token = token[7:]
+        
+        decoded_token = auth.verify_id_token(token)
+        return decoded_token
+    except Exception as e:
+        print(f"Token verification error: {e}")
+        return None
+
+@app.route('/auth/verify-phone', methods=['POST'])
+def verify_phone():
+    """Verify phone authentication and check if user exists"""
+    try:
+        # Check if Firebase is initialized
+        if db is None:
+            return jsonify({"error": "Database connection failed"}), 500
+        
+        # Get Authorization header
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return jsonify({'error': 'Authorization header missing'}), 401
+
+        # Verify Firebase token
+        decoded_token = verify_firebase_token(auth_header)
+        if not decoded_token:
+            return jsonify({'error': 'Invalid or expired token'}), 401
+
+        firebase_uid = decoded_token['uid']
+        phone_number = decoded_token.get('phone_number')
+
+        if not phone_number:
+            return jsonify({'error': 'Phone number not found in token'}), 400
+
+        # Convert phone number format (+639XXXXXXXXX to 09XXXXXXXXX)
+        if phone_number.startswith('+63'):
+            formatted_phone = '0' + phone_number[3:]
+        else:
+            formatted_phone = phone_number
+
+        print(f"Verifying phone for UID: {firebase_uid}, Phone: {formatted_phone}")
+
+        # Check if user exists in Firestore
+        users_ref = db.collection('users')
+        existing_user = users_ref.where('firebase_uid', '==', firebase_uid).limit(1).get()
+        
+        if existing_user:
+            # User exists, return user data
+            user_doc = existing_user[0]
+            user_data = user_doc.to_dict()
+            user_data['id'] = user_doc.id
+            
+            # Convert datetime to string for JSON serialization
+            if 'created_at' in user_data:
+                user_data['created_at'] = user_data['created_at'].isoformat()
+            if 'updated_at' in user_data:
+                user_data['updated_at'] = user_data['updated_at'].isoformat()
+            
+            return jsonify({
+                'message': 'User verified successfully',
+                'user': {
+                    'id': user_data['id'],
+                    'firebaseUid': user_data.get('firebase_uid'),
+                    'fullName': user_data.get('full_name'),
+                    'phone': user_data.get('phone'),
+                    'address': user_data.get('address'),
+                    'barangay': user_data.get('barangay'),
+                    'email': user_data.get('email')
+                },
+                'isNewUser': False,
+                'requiresRegistration': False
+            }), 200
+        else:
+            # New user - needs registration
+            return jsonify({
+                'message': 'Phone verified, registration required',
+                'user': None,
+                'isNewUser': True,
+                'requiresRegistration': True
+            }), 200
+
+    except Exception as e:
+        print(f"Error in verify_phone: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/auth/register', methods=['POST'])
+def register_with_auth():
+    """Register user with Firebase authentication"""
+    try:
+        # Check if Firebase is initialized
+        if db is None:
+            return jsonify({"error": "Database connection failed"}), 500
+        
+        # Get Authorization header
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            return jsonify({'error': 'Authorization header missing'}), 401
+
+        # Verify Firebase token
+        decoded_token = verify_firebase_token(auth_header)
+        if not decoded_token:
+            return jsonify({'error': 'Invalid or expired token'}), 401
+
+        firebase_uid = decoded_token['uid']
+        phone_number = decoded_token.get('phone_number')
+
+        if not phone_number:
+            return jsonify({'error': 'Phone number not found in token'}), 400
+
+        # Convert phone number format (+639XXXXXXXXX to 09XXXXXXXXX)
+        if phone_number.startswith('+63'):
+            formatted_phone = '0' + phone_number[3:]
+        else:
+            formatted_phone = phone_number
+
+        # Get JSON data from the request
+        data = request.get_json()
+        
+        # Check if data is received
+        if not data:
+            return jsonify({"error": "No data received"}), 400
+        
+        # Extract fields from the request
+        first_name = data.get('firstName', '').strip()
+        last_name = data.get('lastName', '').strip()
+        address = data.get('address', '').strip()
+        barangay = data.get('barangay', '').strip()
+        email = data.get('email', '').strip() if data.get('email') else None
+        
+        # Validate required fields
+        if not all([first_name, last_name, address, barangay]):
+            return jsonify({"error": "Missing required fields"}), 400
+        
+        # Check if user already exists (by firebase_uid)
+        users_ref = db.collection('users')
+        existing_user = users_ref.where('firebase_uid', '==', firebase_uid).limit(1).get()
+        
+        if existing_user:
+            return jsonify({"error": "User already registered"}), 409
+        
+        # Create user document
+        user_data = {
+            'firebase_uid': firebase_uid,
+            'first_name': first_name,
+            'last_name': last_name,
+            'full_name': f"{first_name} {last_name}",
+            'address': address,
+            'barangay': barangay,
+            'phone': formatted_phone,
+            'email': email,
+            'created_at': datetime.utcnow(),
+            'updated_at': datetime.utcnow(),
+            'is_active': True
+        }
+        
+        # Add user to Firestore
+        doc_ref = users_ref.add(user_data)
+        user_id = doc_ref[1].id
+        
+        print(f"User registered with ID: {user_id}")
+        
+        # Return success response
+        return jsonify({
+            "message": "User registered successfully",
+            "user": {
+                'id': user_id,
+                'firebaseUid': firebase_uid,
+                'fullName': f"{first_name} {last_name}",
+                'phone': formatted_phone,
+                'address': address,
+                'barangay': barangay,
+                'email': email
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"Error during registration: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
 @app.route('/register', methods=['POST'])
 def register():
+    """Original register endpoint (for backward compatibility)"""
     try:
         # Check if Firebase is initialized
         if db is None:
@@ -139,7 +322,7 @@ def update_user(user_id):
         
         # Update allowed fields
         update_data = {}
-        allowed_fields = ['first_name', 'last_name', 'address', 'barangay', 'phone']
+        allowed_fields = ['first_name', 'last_name', 'address', 'barangay', 'phone', 'email']
         
         for field in allowed_fields:
             if field in data:
